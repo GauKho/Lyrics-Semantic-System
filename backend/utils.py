@@ -39,7 +39,7 @@ def load_and_filter_lyrics_csv(data_path: str) -> pd.DataFrame:
     return pd.concat(all_data, ignore_index=True)
 
 
-def load_lyrics_pairs_from_csvs(data_path: str ="D:\\my_project\\lyrics_music_retrieval\\backend\\data\\csv", max_per_file: int = 100):
+def load_lyrics_pairs_from_csvs(data_path: str ="backend\data\csv", max_per_file: int = 100):
     all_files = glob.glob(os.path.join(data_path, "*.csv"))
     print(f"[DEBUG] Found {len(all_files)} CSV files in: {data_path}")
     examples = []
@@ -72,6 +72,6 @@ def load_lyrics_pairs_from_csvs(data_path: str ="D:\\my_project\\lyrics_music_re
     return examples
 
 if __name__ == "__main__":
-    folder = "D:\\my_project\\lyrics_music_retrieval\\backend\\data\\csv"
+    folder = "backend\data\csv"
     train_examples = load_lyrics_pairs_from_csvs(folder)
     print(f"Tổng số cặp huấn luyện: {len(train_examples)}")

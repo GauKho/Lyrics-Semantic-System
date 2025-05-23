@@ -111,7 +111,7 @@ def test_embedding_similarity(model_path, df):
     print(f"[TEST] Similarity between lyric and title: {score:.4f}")
 
 if __name__ == "__main__":
-    data_dir = "D:\\my_project\\lyrics_semantic_system\\backend\\data\\csv"
+    data_dir = "backend\data\csv"
     update_and_train_if_changed(data_dir)
 
     df_loaded = load_and_prepare_data(data_dir)

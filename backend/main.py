@@ -8,7 +8,7 @@ from typing import List
 
 app = FastAPI()
 
-DATA_PATH = "D:\\my_project\\lyrics_music_retrieval\\backend\\data\\csv"
+DATA_PATH = ".\\lyrics_music_retrieval\\backend\\data\\csv"
 
 class Model(BaseModel):
     query: str 
