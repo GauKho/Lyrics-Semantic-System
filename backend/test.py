@@ -1,6 +1,6 @@
 from retrieval.hybrid_lyrics_searching import HybridLyricsSearch
 
-data_path = "D:\\my_project\\lyrics_semantic_system\\backend\\data\\csv"
+data_path = "backend\data\csv"
 
 try: 
     hybrid_lyrics = HybridLyricsSearch(data_path)
