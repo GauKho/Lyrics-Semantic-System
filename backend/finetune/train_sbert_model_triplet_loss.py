@@ -1,4 +1,4 @@
-from data_loader_multiplerankingloss import load_and_prepare_data, create_training_pairs_augmented, save_examples
+from data_loader import load_and_prepare_data, create_triplet_example_hard, save_examples
 from torch.utils.data import DataLoader
 from sentence_transformers import SentenceTransformer, losses
 from sentence_transformers.evaluation import InformationRetrievalEvaluator
@@ -39,26 +39,25 @@ def build_ir_evaluator(dev_df, max_queries=100):
     return evaluator
 
 
-def train_model(train_examples, dev_df, output_path="lyrics_sbert_model"):
+def train_model(train_examples, dev_df, output_path="lyrics_sbert_model_triplet"):
     model = SentenceTransformer("all-mpnet-base-v2")
-    dataloader = DataLoader(train_examples, shuffle=True, batch_size=8)
+    dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)
 
-    loss = losses.MultipleNegativesRankingLoss(model)
+    loss = losses.TripletLoss(model)
 
     evaluator = build_ir_evaluator(dev_df)
 
     model.fit(
         train_objectives=[(dataloader, loss)],
         evaluator=evaluator,
-        evaluation_steps=1000,
-        epochs=3,
+        evaluation_steps=200,
+        epochs=5,
         warmup_steps=int(0.1 * len(dataloader)),
         optimizer_params={"lr": 2e-5},
         weight_decay=0.01,
         scheduler="WarmupCosine",
         output_path=output_path,
-        show_progress_bar=True,
-        use_amp=True
+        show_progress_bar=True
     )
     print(f"Model fine-tuned and saved to '{output_path}'")
 
@@ -73,7 +72,7 @@ def get_file_hashes(folder):
         for f in glob.glob(os.path.join(folder, "*.csv"))
     }
     
-def update_and_train_if_changed(data_folder, hash_path="data_hashes.json"):
+def update_and_train_if_changed(data_folder, hash_path="data_hashes_triplet.json"):
     print("[INFO] Checking for data changes...")
     current_hashes = get_file_hashes(data_folder)
 
@@ -90,10 +89,10 @@ def update_and_train_if_changed(data_folder, hash_path="data_hashes.json"):
             json.dump(current_hashes, f, indent=2)
 
         df = load_and_prepare_data(data_folder)
-        dev_df = df.sample(frac=0.2, random_state=42)
+        dev_df = df.sample(frac=0.1, random_state=42)
         train_df = df.drop(dev_df.index)
 
-        train_examples = create_training_pairs_augmented(train_df)
+        train_examples = create_triplet_example_hard(train_df)
         save_examples(train_examples)
 
         train_model(train_examples, dev_df)
@@ -112,8 +111,8 @@ def test_embedding_similarity(model_path, df):
     print(f"[TEST] Similarity between lyric and title: {score:.4f}")
 
 if __name__ == "__main__":
-    data_dir = "backend\\data\\csv"
+    data_dir = "backend\data\csv"
     update_and_train_if_changed(data_dir)
 
     df_loaded = load_and_prepare_data(data_dir)
-    test_embedding_similarity("lyrics_sbert_model", df_loaded)
+    test_embedding_similarity("lyrics_sbert_model_triplet", df_loaded)
