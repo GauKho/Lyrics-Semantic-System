@@ -53,9 +53,8 @@ class SBERTSearcher:
             return
 
         self.index = faiss.read_index(self.index_file)
-
-    def search(self, query:str, top_k: int = 5):
-
+    
+    def get_score(self, query: str, top_k: int = 5):
         query_embedding = self.model.encode(query, convert_to_numpy=True)
         query_embedding = self._normalize(query_embedding.reshape(1, -1))
         scores, indices = self.index.search(query_embedding, top_k)
@@ -72,3 +71,7 @@ class SBERTSearcher:
                 })
 
         return results, scores[0], indices[0]
+    
+    def search(self, query: str, top_k: int = 5):
+        result, _, _ = self.get_score(query, top_k)
+        return result

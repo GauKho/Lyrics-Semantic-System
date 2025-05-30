@@ -19,21 +19,21 @@ class BM25LyricsSearch:
         tokenized_query = preprocess_text(query)
         return np.array(self.bm25.get_scores(tokenized_query))
 
-    # def search(self, query:str, top_k: int=5) -> List[Dict]:
-    #     query_token = preprocess_text(query) #Preprocess the user's query
-    #     scores = self.bm25.get_scores(query_token) #get the relevance scores between query and all documents
-    #     top_indices = sorted(range(len(scores)),key=lambda i:scores[i], reverse=True)[:top_k] #get the indices of the top_k documents with the high scores 
+    def search(self, query:str, top_k: int=5) -> List[Dict]:
+        query_token = preprocess_text(query) #Preprocess the user's query
+        scores = self.bm25.get_scores(query_token) #get the relevance scores between query and all documents
+        top_indices = sorted(range(len(scores)),key=lambda i:scores[i], reverse=True)[:top_k] #get the indices of the top_k documents with the high scores 
 
-    #     results = []
-    #     for idx in top_indices:
-    #         result = {
-    #             "title": self.df.iloc[idx]['Title'],
-    #             "album": self.df.iloc[idx]["Album"],
-    #             "artist": self.df.iloc[idx]["Artist"],
-    #             "lyrics":  self.df.iloc[idx]['Lyric'][:300] + "...",
-    #             "Score": round(scores[idx], 2)
-    #         }
-    #         results.append(result)
+        results = []
+        for idx in top_indices:
+            result = {
+                "title": self.df.iloc[idx]['Title'],
+                "album": self.df.iloc[idx]["Album"],
+                "artist": self.df.iloc[idx]["Artist"],
+                "lyrics":  self.df.iloc[idx]['Lyric'][:300] + "...",
+                "Score": round(scores[idx], 2)
+            }
+            results.append(result)
 
-    #     return results
+        return results
 

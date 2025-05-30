@@ -6,14 +6,14 @@ from backend.retrieval.sbert import SBERTSearcher
 import numpy as np
 
 class HybridLyricsSearch:
-    def __init__(self, data_path, sbert_model='lyrics_sbert_model', alpha=0.5):
+    def __init__(self, data_path, sbert_model='lyrics_sbert_model', alpha= 0.5):
         self.bm25 = BM25LyricsSearch(data_path)
         self.sbert = SBERTSearcher(data_path, model_name=sbert_model)
         self.alpha = alpha
 
     def search(self, query, top_k=5):
         bm25_scores = self.bm25.get_score(query)
-        _, sbert_raw_scores, indices = self.sbert.search(query, top_k=top_k * 2)  # search wider range
+        _, sbert_raw_scores, indices = self.sbert.get_score(query, top_k=top_k * 2)  # search wider range
 
         # Normalize scores
         bm25_norm = (bm25_scores - bm25_scores.min()) / (bm25_scores.max() - bm25_scores.min() + 1e-8)
